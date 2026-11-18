@@ -1,0 +1,32 @@
+{
+  "cifar10_seed0": {
+    "digest": "a6dbbd01e0bcf812",
+    "train": 45000,
+    "val": 5000
+  },
+  "cifar10_seed1": {
+    "digest": "cf06aefca4b31525",
+    "train": 45000,
+    "val": 5000
+  },
+  "cifar10_seed2": {
+    "digest": "cf0bba29be31eb49",
+    "train": 45000,
+    "val": 5000
+  },
+  "gtsrb_seed0": {
+    "digest": "7009e14e214b945e",
+    "train": 35909,
+    "val": 3300
+  },
+  "gtsrb_seed1": {
+    "digest": "ae8bd517aa832fd9",
+    "train": 35909,
+    "val": 3300
+  },
+  "gtsrb_seed2": {
+    "digest": "bf621d0026551060",
+    "train": 35909,
+    "val": 3300
+  }
+}
