@@ -1,0 +1,5 @@
+# Dev and CI dependencies. CI installs only this file plus requirements.txt: no torch.
+-r requirements.txt
+pytest>=8.0
+ruff>=0.5
+pre-commit>=3.7

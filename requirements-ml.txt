@@ -1,0 +1,8 @@
+# Training and attack dependencies. Install on Kaggle/Colab (or a local GPU machine), not in CI or the demo image.
+-r requirements.txt
+torch>=2.3
+torchvision>=0.18
+onnx>=1.16
+# Pin ART once a working version is confirmed against the installed torch (PLAN.md risk 2).
+adversarial-robustness-toolbox>=1.18
+scikit-learn>=1.4

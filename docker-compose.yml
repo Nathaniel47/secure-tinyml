@@ -1,0 +1,8 @@
+services:
+  app:
+    build: .
+    ports: ["7860:7860"]
+    environment:
+      GRADIO_SERVER_NAME: "0.0.0.0"
+    volumes: ["./models:/app/models", "./results:/app/results", "./app:/app/app"]
+    mem_limit: 1g

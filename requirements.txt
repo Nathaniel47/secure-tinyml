@@ -1,0 +1,6 @@
+# Runtime for the Gradio demo (exported ONNX models only; no torch, no GPU)
+gradio>=4.30
+onnxruntime>=1.18
+numpy>=1.26
+pandas>=2.2
+pillow>=10
