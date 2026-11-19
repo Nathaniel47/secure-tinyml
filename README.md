@@ -115,7 +115,7 @@ Checked 2026-11-18. **None of these gives an authoritative, machine-readable lic
 | GTSRB | ERDA mirror linked from the INI benchmark repo (the old benchmark.ini.rub.de site now redirects to github.com/houbensebastian/GermanTrafficSignBenchmarks) | Asks to cite Stallkamp et al., IJCNN 2011 and Neural Networks 2012. No licence stated (the repo has none). A Hugging Face mirror says GPL-3.0, which is not the authors' statement. | Research use, cite. No checksum published; sha256 prefixes printed by `fetch`. |
 | PlantVillage | not downloaded | Conflicting: CC0 1.0 (Mendeley record per Meta-Album) vs CC BY-SA 3.0 (a Zenodo copy, one paper). Official Mendeley page not opened. | **Unverified.** Decide before using it. |
 
-Code licence: **none yet.** Add a LICENSE file before announcing the repo.
+Code licence: MIT, see [LICENSE](LICENSE) (code only; the datasets have their own terms and are not included).
 
 ## Limitations
 
