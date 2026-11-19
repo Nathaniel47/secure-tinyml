@@ -207,3 +207,16 @@ The unpoisoned model almost never sends triggered images to the target (2.4% and
 **Decisions left to you.** Creating the Hugging Face account/Space and enabling GitHub Pages are public actions under your accounts, so I did not do them. I also did not add a licence field to the Space or a LICENSE file to the repo: pick one (MIT matches the sibling projects) before announcing. No CIFAR-10 or GTSRB image is in either package, so the Space has upload only, no example gallery.
 
 **Not verified.** A real Hugging Face build (Gradio 6.32.0 and the free CPU image have not been tried together), the GitHub Pages workflow itself (never run), and the phone.
+
+## Step 8: README, write-up and portfolio card
+
+**What was built.** A rewritten README (purpose, architecture diagram, results table with charts, how to run, limitations, future work), `PORTFOLIO.md` (a 120-word card and one sentence for emailing professors), and `docs/technical-writeup.md` (about 1,800 words with tables: problem, method, results, lessons, limitations).
+
+**Why it matters, in plain English.** People often assume a compressed model is either safer (harder to attack) or irrelevant to security. On this small setup it was neither: int8 behaved like fp32 under attack, and the only thing quantization visibly changed was a backdoor, which got weaker. The useful habits are the ones in the write-up's lessons: chase a suspicious gap to its real cause, compare against a reference implementation, record how many samples each number comes from, and judge a defense only against an attacker who knows about it.
+
+**Things to do before sending anything out.**
+- Publish the demo and phone page (DEPLOY.md) and replace the two `TODO` links in README.md and PORTFOLIO.md.
+- Run the real-phone test and add its JSON to LEARNING.md and the write-up.
+- Add a LICENSE file and tell me which one.
+- Record a short GIF of the demo (`docs/demo.gif`).
+- Read one recent paper per professor and tailor the sentence; I did not look up their work, so none is named.
