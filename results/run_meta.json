@@ -1,11 +1,129 @@
 {
+  "art_check_cifar10_seed0.csv": {
+    "art_version": "1.20.1",
+    "dataset": "cifar10",
+    "git_commit": "734d911",
+    "libraries": {
+      "numpy": "2.4.6",
+      "onnx": "1.23.2",
+      "onnxruntime": "1.32.0",
+      "pandas": "3.1.1",
+      "pillow": "13.0.0",
+      "torch": "2.15.0+cpu"
+    },
+    "n": 500,
+    "python": "3.11.9",
+    "seed": 0
+  },
+  "attacks_cifar10_seed0.csv": {
+    "backdoor_rates": [
+      0.01,
+      0.02,
+      0.05
+    ],
+    "dataset": "cifar10",
+    "git_commit": "734d911",
+    "libraries": {
+      "numpy": "2.4.6",
+      "onnx": "1.23.2",
+      "onnxruntime": "1.32.0",
+      "pandas": "3.1.1",
+      "pillow": "13.0.0",
+      "torch": "2.15.0+cpu"
+    },
+    "n": 500,
+    "python": "3.11.9",
+    "seed": 0
+  },
+  "attacks_cifar10_seed1.csv": {
+    "backdoor_rates": [],
+    "dataset": "cifar10",
+    "git_commit": "734d911",
+    "libraries": {
+      "numpy": "2.4.6",
+      "onnx": "1.23.2",
+      "onnxruntime": "1.32.0",
+      "pandas": "3.1.1",
+      "pillow": "13.0.0",
+      "torch": "2.15.0+cpu"
+    },
+    "n": 500,
+    "python": "3.11.9",
+    "seed": 1
+  },
+  "attacks_cifar10_seed2.csv": {
+    "backdoor_rates": [],
+    "dataset": "cifar10",
+    "git_commit": "734d911",
+    "libraries": {
+      "numpy": "2.4.6",
+      "onnx": "1.23.2",
+      "onnxruntime": "1.32.0",
+      "pandas": "3.1.1",
+      "pillow": "13.0.0",
+      "torch": "2.15.0+cpu"
+    },
+    "n": 500,
+    "python": "3.11.9",
+    "seed": 2
+  },
+  "attacks_gtsrb_seed0.csv": {
+    "backdoor_rates": [
+      0.05
+    ],
+    "dataset": "gtsrb",
+    "git_commit": "734d911",
+    "libraries": {
+      "numpy": "2.4.6",
+      "onnx": "1.23.2",
+      "onnxruntime": "1.32.0",
+      "pandas": "3.1.1",
+      "pillow": "13.0.0",
+      "torch": "2.15.0+cpu"
+    },
+    "n": 500,
+    "python": "3.11.9",
+    "seed": 0
+  },
+  "attacks_gtsrb_seed1.csv": {
+    "backdoor_rates": [],
+    "dataset": "gtsrb",
+    "git_commit": "734d911",
+    "libraries": {
+      "numpy": "2.4.6",
+      "onnx": "1.23.2",
+      "onnxruntime": "1.32.0",
+      "pandas": "3.1.1",
+      "pillow": "13.0.0",
+      "torch": "2.15.0+cpu"
+    },
+    "n": 500,
+    "python": "3.11.9",
+    "seed": 1
+  },
+  "attacks_gtsrb_seed2.csv": {
+    "backdoor_rates": [],
+    "dataset": "gtsrb",
+    "git_commit": "734d911",
+    "libraries": {
+      "numpy": "2.4.6",
+      "onnx": "1.23.2",
+      "onnxruntime": "1.32.0",
+      "pandas": "3.1.1",
+      "pillow": "13.0.0",
+      "torch": "2.15.0+cpu"
+    },
+    "n": 500,
+    "python": "3.11.9",
+    "seed": 2
+  },
   "defenses_cifar10_seed0.csv": {
     "dataset": "cifar10",
     "eps": [
       2,
       4
     ],
-    "git_commit": "8913cb4",
+    "git_commit": "734d911",
     "libraries": {
       "numpy": "2.4.6",
       "onnx": "1.23.2",
@@ -17,6 +135,251 @@
     "n": 500,
     "python": "3.11.9",
     "seed": 0,
+    "variants": [
+      [
+        "fp32",
+        "none"
+      ],
+      [
+        "fp32",
+        "purify"
+      ],
+      [
+        "fp32",
+        "purify_blur"
+      ],
+      [
+        "fp32",
+        "clip"
+      ],
+      [
+        "fp32",
+        "purify+clip"
+      ],
+      [
+        "advtrain",
+        "none"
+      ],
+      [
+        "advtrain",
+        "clip"
+      ]
+    ]
+  },
+  "defenses_cifar10_seed1.csv": {
+    "dataset": "cifar10",
+    "eps": [
+      2,
+      4
+    ],
+    "git_commit": "734d911",
+    "libraries": {
+      "numpy": "2.4.6",
+      "onnx": "1.23.2",
+      "onnxruntime": "1.32.0",
+      "pandas": "3.1.1",
+      "pillow": "13.0.0",
+      "torch": "2.15.0+cpu"
+    },
+    "n": 500,
+    "python": "3.11.9",
+    "seed": 1,
+    "variants": [
+      [
+        "fp32",
+        "none"
+      ],
+      [
+        "fp32",
+        "purify"
+      ],
+      [
+        "fp32",
+        "purify_blur"
+      ],
+      [
+        "fp32",
+        "clip"
+      ],
+      [
+        "fp32",
+        "purify+clip"
+      ],
+      [
+        "advtrain",
+        "none"
+      ],
+      [
+        "advtrain",
+        "clip"
+      ]
+    ]
+  },
+  "defenses_cifar10_seed2.csv": {
+    "dataset": "cifar10",
+    "eps": [
+      2,
+      4
+    ],
+    "git_commit": "734d911",
+    "libraries": {
+      "numpy": "2.4.6",
+      "onnx": "1.23.2",
+      "onnxruntime": "1.32.0",
+      "pandas": "3.1.1",
+      "pillow": "13.0.0",
+      "torch": "2.15.0+cpu"
+    },
+    "n": 500,
+    "python": "3.11.9",
+    "seed": 2,
+    "variants": [
+      [
+        "fp32",
+        "none"
+      ],
+      [
+        "fp32",
+        "purify"
+      ],
+      [
+        "fp32",
+        "purify_blur"
+      ],
+      [
+        "fp32",
+        "clip"
+      ],
+      [
+        "fp32",
+        "purify+clip"
+      ],
+      [
+        "advtrain",
+        "none"
+      ],
+      [
+        "advtrain",
+        "clip"
+      ]
+    ]
+  },
+  "defenses_gtsrb_seed0.csv": {
+    "dataset": "gtsrb",
+    "eps": [
+      2,
+      4
+    ],
+    "git_commit": "734d911",
+    "libraries": {
+      "numpy": "2.4.6",
+      "onnx": "1.23.2",
+      "onnxruntime": "1.32.0",
+      "pandas": "3.1.1",
+      "pillow": "13.0.0",
+      "torch": "2.15.0+cpu"
+    },
+    "n": 500,
+    "python": "3.11.9",
+    "seed": 0,
+    "variants": [
+      [
+        "fp32",
+        "none"
+      ],
+      [
+        "fp32",
+        "purify"
+      ],
+      [
+        "fp32",
+        "purify_blur"
+      ],
+      [
+        "fp32",
+        "clip"
+      ],
+      [
+        "fp32",
+        "purify+clip"
+      ],
+      [
+        "advtrain",
+        "none"
+      ],
+      [
+        "advtrain",
+        "clip"
+      ]
+    ]
+  },
+  "defenses_gtsrb_seed1.csv": {
+    "dataset": "gtsrb",
+    "eps": [
+      2,
+      4
+    ],
+    "git_commit": "734d911",
+    "libraries": {
+      "numpy": "2.4.6",
+      "onnx": "1.23.2",
+      "onnxruntime": "1.32.0",
+      "pandas": "3.1.1",
+      "pillow": "13.0.0",
+      "torch": "2.15.0+cpu"
+    },
+    "n": 500,
+    "python": "3.11.9",
+    "seed": 1,
+    "variants": [
+      [
+        "fp32",
+        "none"
+      ],
+      [
+        "fp32",
+        "purify"
+      ],
+      [
+        "fp32",
+        "purify_blur"
+      ],
+      [
+        "fp32",
+        "clip"
+      ],
+      [
+        "fp32",
+        "purify+clip"
+      ],
+      [
+        "advtrain",
+        "none"
+      ],
+      [
+        "advtrain",
+        "clip"
+      ]
+    ]
+  },
+  "defenses_gtsrb_seed2.csv": {
+    "dataset": "gtsrb",
+    "eps": [
+      2,
+      4
+    ],
+    "git_commit": "734d911",
+    "libraries": {
+      "numpy": "2.4.6",
+      "onnx": "1.23.2",
+      "onnxruntime": "1.32.0",
+      "pandas": "3.1.1",
+      "pillow": "13.0.0",
+      "torch": "2.15.0+cpu"
+    },
+    "n": 500,
+    "python": "3.11.9",
+    "seed": 2,
     "variants": [
       [
         "fp32",

@@ -1,0 +1,14 @@
+dataset,seed,attack,strength,implementation,accuracy,n,art_version
+cifar10,0,none,0,ours,0.792,500,1.20.1
+cifar10,0,fgsm,2,ours,0.202,500,1.20.1
+cifar10,0,fgsm,2,art,0.202,500,1.20.1
+cifar10,0,pgd10,2,ours,0.024,500,1.20.1
+cifar10,0,pgd10,2,art,0.022,500,1.20.1
+cifar10,0,fgsm,4,ours,0.07,500,1.20.1
+cifar10,0,fgsm,4,art,0.07,500,1.20.1
+cifar10,0,pgd10,4,ours,0.0,500,1.20.1
+cifar10,0,pgd10,4,art,0.0,500,1.20.1
+cifar10,0,fgsm,8,ours,0.034,500,1.20.1
+cifar10,0,fgsm,8,art,0.034,500,1.20.1
+cifar10,0,pgd10,8,ours,0.0,500,1.20.1
+cifar10,0,pgd10,8,art,0.0,500,1.20.1

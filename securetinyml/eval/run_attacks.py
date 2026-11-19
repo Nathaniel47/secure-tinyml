@@ -22,6 +22,7 @@ from securetinyml.attacks.patch import apply_patch, random_positions, train_patc
 from securetinyml.config import DATASETS, EPS_255, PATCH_FRACTIONS
 from securetinyml.data.common import ROOT, load_splits
 from securetinyml.data.load import get_dataset
+from securetinyml.eval.meta import write_run_meta
 from securetinyml.models.quantize import FakeQuantSurrogate
 from securetinyml.models.resnet_small import SmallResNet
 from securetinyml.models.train import MODELS, to_tensor
@@ -60,7 +61,13 @@ def main() -> None:
     ap.add_argument("dataset")
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--n", type=int, default=1000, help="test images used for attacks")
-    ap.add_argument("--bd", type=float, nargs="*", default=[], help="backdoor poison rates")
+    ap.add_argument(
+        "--bd",
+        type=float,
+        nargs="*",
+        default=None,
+        help="backdoor poison rates (default: all found)",
+    )
     ap.add_argument("--target", type=int, default=0)
     a = ap.parse_args()
 
@@ -120,7 +127,7 @@ def main() -> None:
                 fooled8 = int8.pred(adv.numpy()) != y.numpy()
                 if fooled.any():
                     add(name, e, crafted, "int8", fooled8[fooled].mean(), "transfer_rate")
-        n_bb = min(200, len(y))
+        n_bb = len(y)  # was 200 (and mislabelled n=1000) in the first run
         adv = random_search(lambda z: int8.logits(z), x[:n_bb].numpy(), y[:n_bb].numpy(), eps)
         add(
             "random_search300",
@@ -161,7 +168,19 @@ def main() -> None:
 
     # backdoor: models trained on poisoned data (see securetinyml.models.train --poison-rate)
     xt_u8, yt_u8 = d["x_test"], d["y_test"]
-    for rate in a.bd:
+    rates = a.bd
+    if rates is None:
+        rates = [
+            r
+            for r in (0.01, 0.02, 0.05)
+            if (MODELS / f"{a.dataset}_bd{int(r * 100)}_seed{a.seed}_int8.onnx").exists()
+        ]
+    if rates:  # baseline: how often the CLEAN model already sends triggered images to the target
+        for nm, p in (("fp32", lambda u8: model(to_tensor(u8)).argmax(1).detach().numpy()),
+                      ("int8", lambda u8: int8.pred(to_tensor(u8).numpy()))):  # fmt: skip
+            add("backdoor", 0, "-", nm, attack_success_rate(p, xt_u8, yt_u8, a.target),
+                "target_success_rate")  # fmt: skip
+    for rate in rates:
         tag = f"bd{int(rate * 100)}"
         bm, b8 = load_model(a.dataset, tag, a.seed, nc)
 
@@ -189,6 +208,7 @@ def main() -> None:
         w = csv.DictWriter(f, fieldnames=list(rows[0]))
         w.writeheader()
         w.writerows(rows)
+    write_run_meta(out.name, dataset=a.dataset, seed=a.seed, n=a.n, backdoor_rates=rates)
     print("wrote", out)
 
 

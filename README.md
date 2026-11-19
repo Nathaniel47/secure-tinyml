@@ -2,7 +2,7 @@
 
 A study platform for adversarial patches, FGSM/PGD and backdoors on small image models, comparing full-precision (fp32) against int8-quantized versions, with cheap defenses (adversarial training, input purification, activation clipping) and a Gradio demo. A static page runs the int8 model in the browser on a phone with ONNX Runtime Web.
 
-Status: repo setup, data pipeline (CIFAR-10, GTSRB), the attacks (FGSM, PGD, patch, backdoor on CIFAR-10, fp32 vs int8), three defenses, the Gradio demo and a browser test page are built. The phone test, evaluation on more seeds and datasets, and deployment are still to do. Results so far are one seed and preliminary (int8 now matches fp32 accuracy after a kernel fix): see LEARNING.md (Steps 4-5) and `results/*.csv`. See [PLAN.md](PLAN.md) for the design.
+Status: repo setup, data pipeline (CIFAR-10, GTSRB), the attacks (FGSM, PGD, patch, backdoor on CIFAR-10, fp32 vs int8), three defenses, the Gradio demo and a browser test page are built. Evaluated on CIFAR-10 and GTSRB with 3 seeds (PlantVillage not run). The real-phone test, deployment and the write-up are still to do. Results so far are one seed and preliminary (int8 now matches fp32 accuracy after a kernel fix): see LEARNING.md (Steps 4-5) and `results/*.csv`. See [PLAN.md](PLAN.md) for the design.
 
 Small models, small images, one phone: this is a study, not a claim about production edge devices. Dataset licences are not yet verified (see PLAN.md); no raw data is redistributed.
 
@@ -53,3 +53,11 @@ Checked 2026-11-18. **None of these gives an authoritative, machine-readable lic
 | PlantVillage | not downloaded | Conflicting: CC0 1.0 (Mendeley record per Meta-Album) vs CC BY-SA 3.0 (a Zenodo copy, one paper). Official Mendeley page not opened. | **Unverified.** Decide before using it. |
 
 Code is MIT-style; add a LICENSE file before announcing the repo (not done yet).
+
+## Results and limitations (Step 6)
+
+Charts: `results/chart_pgd_fp32_vs_int8.png`, `results/chart_defenses.png`, `results/chart_patch_backdoor.png`. Tables with intervals: LEARNING.md, "Step 6". Raw rows: `results/*.csv`; what produced them: `results/run_meta.json`.
+
+Headline: after fixing an int8 kernel setting, int8 matches fp32 on accuracy and under attack, and attacks crafted on fp32 transfer to int8 almost completely. Adversarial training is the only defense that clearly works, including against an adaptive attacker. Input purification helps only against an attacker who does not know about it, and activation clipping did nothing here. A BadNets backdoor is weakened by int8 (one seed per rate).
+
+Limitations: 3 seeds and 500 images per grid; backdoor results are one seed per rate; PGD with 10 steps and no AutoAttack, so robust numbers are upper bounds; one tiny ResNet at 32x32; one quantization toolchain; the real-phone test is not done yet; PlantVillage, backdoor detection and TFLite were not run; dataset licences are not yet verified.

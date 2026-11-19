@@ -2,8 +2,8 @@ dataset,seed,weights,defense,attack,strength,adaptivity,evaluated_on,metric,valu
 cifar10,0,fp32,none,none,0,-,fp32,accuracy,0.792,500
 cifar10,0,fp32,none,none,0,-,int8,accuracy,0.794,500
 cifar10,0,fp32,none,cost,0,-,int8,size_kb,100.4443,500
-cifar10,0,fp32,none,cost,0,-,fp32,latency_ms_b1,0.3228,500
-cifar10,0,fp32,none,cost,0,-,int8,latency_ms_b1,0.8901,500
+cifar10,0,fp32,none,cost,0,-,fp32,latency_ms_b1,0.4086,500
+cifar10,0,fp32,none,cost,0,-,int8,latency_ms_b1,0.9176,500
 cifar10,0,fp32,none,pgd10,2,non-adaptive,fp32,accuracy,0.024,500
 cifar10,0,fp32,none,pgd10,2,non-adaptive,int8,accuracy,0.026,500
 cifar10,0,fp32,none,pgd10,2,adaptive,fp32,accuracy,0.024,500
@@ -17,8 +17,8 @@ cifar10,0,fp32,none,random_search300,4,black-box,int8,accuracy,0.524,500
 cifar10,0,fp32,purify,none,0,-,fp32,accuracy,0.774,500
 cifar10,0,fp32,purify,none,0,-,int8,accuracy,0.776,500
 cifar10,0,fp32,purify,cost,0,-,int8,size_kb,104.6641,500
-cifar10,0,fp32,purify,cost,0,-,fp32,latency_ms_b1,0.2935,500
-cifar10,0,fp32,purify,cost,0,-,int8,latency_ms_b1,0.7072,500
+cifar10,0,fp32,purify,cost,0,-,fp32,latency_ms_b1,0.5276,500
+cifar10,0,fp32,purify,cost,0,-,int8,latency_ms_b1,0.9631,500
 cifar10,0,fp32,purify,pgd10,2,non-adaptive,fp32,accuracy,0.136,500
 cifar10,0,fp32,purify,pgd10,2,non-adaptive,int8,accuracy,0.136,500
 cifar10,0,fp32,purify,pgd10,2,adaptive,fp32,accuracy,0.078,500
@@ -32,8 +32,8 @@ cifar10,0,fp32,purify,random_search300,4,black-box,int8,accuracy,0.338,500
 cifar10,0,fp32,purify_blur,none,0,-,fp32,accuracy,0.386,500
 cifar10,0,fp32,purify_blur,none,0,-,int8,accuracy,0.386,500
 cifar10,0,fp32,purify_blur,cost,0,-,int8,size_kb,106.3643,500
-cifar10,0,fp32,purify_blur,cost,0,-,fp32,latency_ms_b1,0.3715,500
-cifar10,0,fp32,purify_blur,cost,0,-,int8,latency_ms_b1,0.6376,500
+cifar10,0,fp32,purify_blur,cost,0,-,fp32,latency_ms_b1,0.3315,500
+cifar10,0,fp32,purify_blur,cost,0,-,int8,latency_ms_b1,0.9021,500
 cifar10,0,fp32,purify_blur,pgd10,2,non-adaptive,fp32,accuracy,0.338,500
 cifar10,0,fp32,purify_blur,pgd10,2,non-adaptive,int8,accuracy,0.346,500
 cifar10,0,fp32,purify_blur,pgd10,2,adaptive,fp32,accuracy,0.104,500
@@ -47,8 +47,8 @@ cifar10,0,fp32,purify_blur,random_search300,4,black-box,int8,accuracy,0.238,500
 cifar10,0,fp32,clip,none,0,-,fp32,accuracy,0.784,500
 cifar10,0,fp32,clip,none,0,-,int8,accuracy,0.788,500
 cifar10,0,fp32,clip,cost,0,-,int8,size_kb,101.415,500
-cifar10,0,fp32,clip,cost,0,-,fp32,latency_ms_b1,0.3397,500
-cifar10,0,fp32,clip,cost,0,-,int8,latency_ms_b1,0.6122,500
+cifar10,0,fp32,clip,cost,0,-,fp32,latency_ms_b1,0.4458,500
+cifar10,0,fp32,clip,cost,0,-,int8,latency_ms_b1,0.7613,500
 cifar10,0,fp32,clip,pgd10,2,non-adaptive,fp32,accuracy,0.03,500
 cifar10,0,fp32,clip,pgd10,2,non-adaptive,int8,accuracy,0.03,500
 cifar10,0,fp32,clip,pgd10,2,adaptive,fp32,accuracy,0.028,500
@@ -62,8 +62,8 @@ cifar10,0,fp32,clip,random_search300,4,black-box,int8,accuracy,0.518,500
 cifar10,0,fp32,purify+clip,none,0,-,fp32,accuracy,0.764,500
 cifar10,0,fp32,purify+clip,none,0,-,int8,accuracy,0.762,500
 cifar10,0,fp32,purify+clip,cost,0,-,int8,size_kb,105.4541,500
-cifar10,0,fp32,purify+clip,cost,0,-,fp32,latency_ms_b1,0.3724,500
-cifar10,0,fp32,purify+clip,cost,0,-,int8,latency_ms_b1,0.7843,500
+cifar10,0,fp32,purify+clip,cost,0,-,fp32,latency_ms_b1,0.4285,500
+cifar10,0,fp32,purify+clip,cost,0,-,int8,latency_ms_b1,0.8419,500
 cifar10,0,fp32,purify+clip,pgd10,2,non-adaptive,fp32,accuracy,0.148,500
 cifar10,0,fp32,purify+clip,pgd10,2,non-adaptive,int8,accuracy,0.148,500
 cifar10,0,fp32,purify+clip,pgd10,2,adaptive,fp32,accuracy,0.068,500
@@ -77,8 +77,8 @@ cifar10,0,fp32,purify+clip,random_search300,4,black-box,int8,accuracy,0.336,500
 cifar10,0,advtrain,none,none,0,-,fp32,accuracy,0.672,500
 cifar10,0,advtrain,none,none,0,-,int8,accuracy,0.68,500
 cifar10,0,advtrain,none,cost,0,-,int8,size_kb,100.4531,500
-cifar10,0,advtrain,none,cost,0,-,fp32,latency_ms_b1,0.2954,500
-cifar10,0,advtrain,none,cost,0,-,int8,latency_ms_b1,0.6182,500
+cifar10,0,advtrain,none,cost,0,-,fp32,latency_ms_b1,0.4042,500
+cifar10,0,advtrain,none,cost,0,-,int8,latency_ms_b1,0.8374,500
 cifar10,0,advtrain,none,pgd10,2,non-adaptive,fp32,accuracy,0.658,500
 cifar10,0,advtrain,none,pgd10,2,non-adaptive,int8,accuracy,0.662,500
 cifar10,0,advtrain,none,pgd10,2,adaptive,fp32,accuracy,0.576,500
@@ -92,8 +92,8 @@ cifar10,0,advtrain,none,random_search300,4,black-box,int8,accuracy,0.624,500
 cifar10,0,advtrain,clip,none,0,-,fp32,accuracy,0.684,500
 cifar10,0,advtrain,clip,none,0,-,int8,accuracy,0.684,500
 cifar10,0,advtrain,clip,cost,0,-,int8,size_kb,101.4326,500
-cifar10,0,advtrain,clip,cost,0,-,fp32,latency_ms_b1,0.3963,500
-cifar10,0,advtrain,clip,cost,0,-,int8,latency_ms_b1,0.604,500
+cifar10,0,advtrain,clip,cost,0,-,fp32,latency_ms_b1,0.387,500
+cifar10,0,advtrain,clip,cost,0,-,int8,latency_ms_b1,0.669,500
 cifar10,0,advtrain,clip,pgd10,2,non-adaptive,fp32,accuracy,0.666,500
 cifar10,0,advtrain,clip,pgd10,2,non-adaptive,int8,accuracy,0.664,500
 cifar10,0,advtrain,clip,pgd10,2,adaptive,fp32,accuracy,0.574,500
