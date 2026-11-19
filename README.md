@@ -2,8 +2,8 @@
 
 **Do small image classifiers get easier or harder to attack when they are squeezed to int8 for a phone or microcontroller, and which cheap defenses actually help?** This repo measures it: FGSM, PGD, adversarial patches and a backdoor, against fp32 and int8 versions of the same tiny ResNet, with three defenses, a Gradio demo and an in-browser phone test.
 
-- **Demo:** _not published yet_. Hugging Face Space link: `TODO` (build steps in [DEPLOY.md](DEPLOY.md)).
-- **Phone page:** _not published yet_. GitHub Pages link: `TODO`.
+- **Phone page (live):** https://nathaniel47.github.io/secure-tinyml/ runs the int8 or fp32 model in your browser with ONNX Runtime Web; upload or photograph an image.
+- **Gradio demo:** not hosted. Run it locally (below). Hugging Face's free tier no longer hosts Gradio Spaces without a PRO subscription (see [DEPLOY.md](DEPLOY.md)).
 - **Demo GIF:** `docs/demo.gif` _(placeholder: record the Gradio demo with a patch pasted on)_.
 - **Write-up:** [docs/technical-writeup.md](docs/technical-writeup.md). **Plain-English notes per step:** [LEARNING.md](LEARNING.md). **Design:** [PLAN.md](PLAN.md).
 
