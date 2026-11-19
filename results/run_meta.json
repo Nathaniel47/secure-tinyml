@@ -1,0 +1,51 @@
+{
+  "defenses_cifar10_seed0.csv": {
+    "dataset": "cifar10",
+    "eps": [
+      2,
+      4
+    ],
+    "git_commit": "8913cb4",
+    "libraries": {
+      "numpy": "2.4.6",
+      "onnx": "1.23.2",
+      "onnxruntime": "1.32.0",
+      "pandas": "3.1.1",
+      "pillow": "13.0.0",
+      "torch": "2.15.0+cpu"
+    },
+    "n": 500,
+    "python": "3.11.9",
+    "seed": 0,
+    "variants": [
+      [
+        "fp32",
+        "none"
+      ],
+      [
+        "fp32",
+        "purify"
+      ],
+      [
+        "fp32",
+        "purify_blur"
+      ],
+      [
+        "fp32",
+        "clip"
+      ],
+      [
+        "fp32",
+        "purify+clip"
+      ],
+      [
+        "advtrain",
+        "none"
+      ],
+      [
+        "advtrain",
+        "clip"
+      ]
+    ]
+  }
+}

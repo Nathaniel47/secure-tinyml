@@ -78,3 +78,49 @@ python -m securetinyml.eval.run_attacks cifar10 --seed 0 --n 1000 --bd 0.05
 - *Quantization*: int8 weights and activations. Read Jacob et al. 2018, "Quantization and Training of Neural Networks for Efficient Integer-Arithmetic-Only Inference" (arXiv).
 - *Straight-through estimator*: pretend rounding has gradient 1. Read Bengio et al. 2013, "Estimating or Propagating Gradients Through Stochastic Neurons" (arXiv).
 - *Gradient masking*: why a failed gradient attack proves little. Read Athalye et al. 2018, "Obfuscated Gradients Give a False Sense of Security" (arXiv).
+
+## Step 5: Defenses, demo and on-device test
+
+**What was built.** Three defenses behind one wrapper (`securetinyml/defenses/`), a defense grid (`eval/run_defenses.py`, writes `results/defenses_cifar10_seed0.csv`), a Gradio demo (`app/`) and a static browser page (`web/`). Numbers are **CIFAR-10, seed 0, 500 test images, PGD with 10 steps**: a first look, not a result.
+- *Input purification* (`purify.py`): round pixels to 4 bits (or 5 bits plus a 3x3 blur). Part of the model graph, so it exports to ONNX.
+- *Activation clipping* (`act_clip.py`): cap every ReLU output at the 99.9th percentile seen on 500 clean images. No retraining.
+- *Adversarial training* (`adv_train.py`): fine-tune the clean model for 6 epochs on one-step attacked images at eps 4/255 ("fast" adversarial training with a random start). About 2x the cost of normal training instead of 3-8x, because this runs on a laptop CPU.
+- `build(model, "purify+clip", calib)` composes them, so one evaluator measures every variant.
+
+**Three kinds of attacker.** *Non-adaptive*: the attack is made on the undefended model and then shown to the defended one. *Adaptive*: the attack is made on the defended model itself; for purification the rounding is bypassed with a straight-through gradient (BPDA). *Black-box*: query-only random search on the defended int8 model, a check against gradient masking. A defense only counts if it survives the adaptive attacker.
+
+**Key numbers** (accuracy under PGD, eps in 1/255, int8 model; fp32 is within 0.4 points everywhere)
+
+| Defense | Clean | Non-adaptive eps 2 | Adaptive eps 2 | Adaptive eps 4 | Black-box eps 4 |
+|---|---|---|---|---|---|
+| none | 79.4% | 2.6% | 2.6% | 0.0% | 52.4% |
+| purify (4 bit) | 77.6% | 13.6% | 8.0% | 0.0% | 33.8% |
+| purify (5 bit + blur) | 38.6% | 34.6% | 10.0% | 1.8% | 23.8% |
+| activation clipping | 78.8% | 3.0% | 3.0% | 0.0% | 51.8% |
+| adversarial training | 68.0% | 66.2% | **57.8%** | **45.8%** | 62.4% |
+
+- **Adversarial training is the only defense that works.** It keeps 57.8% (eps 2) and 45.8% (eps 4) under the adaptive attack, at a cost of 11 points of clean accuracy. The black-box attack is *weaker* than the white-box one on it (62% vs 46% at eps 4), so the robustness is not hidden gradients. Trained at eps 4; eps 8 was not measured.
+- **Purification helps against an attacker who does not know about it, and almost nothing against one who does** (13.6% falls to 8.0%, 0.0% at eps 4). The blur version costs 40 points of clean accuracy for little.
+- **Activation clipping did nothing here** at a 99.9th-percentile cap (the cap is probably too loose; tighter caps or clipping during training were not tried).
+- **int8 and fp32 behave the same** under every defense (adaptive attacks transfer in both directions), and no defense added a measurable latency cost (all within 0.3-0.9 ms single-image CPU, which is timing noise) or more than 6 KB of model size.
+- Black-box accuracy on purified models is *lower* than on the undefended one (33.8% vs 52.4% at eps 4). I did not investigate why; the likely reason is that the 4-bit rounding makes the model's margins small, so random noise flips it more easily, but that is a guess.
+
+**Browser test.** `web/index.html` runs the fp32 and int8 models with ONNX Runtime Web (WASM backend, 1.20.1 from a CDN). In the desktop in-app browser both load, and both agree with the laptop on **200 of 200** images (81% accuracy on this subset), at about 3.5 ms per image. **This was not a phone**: the phone result (accuracy match and latency) still needs your run. To do it: `python web/make_testset.py`, then in `web/` run `python -m http.server 8000`, open `http://<laptop-ip>:8000` on the phone on the same Wi-Fi, choose a model, load it and press "Run test set"; copy the JSON that appears. WebGPU was not tried.
+
+**Demo.** `python app/make_assets.py` (needs torch) copies the models, trains one patch per size against the fp32 model and saves a few example images; `python app/demo.py` then serves it. It shows fp32, int8 and the adversarially trained int8 side by side. On 8 example images a 10%-area patch flips fp32 and int8 on 7 of 8 while the defended model is fooled on 3 of 8; this is a spot check, not a measurement. The example images and the CIFAR-10 test set are not committed (licence unverified); the committed patches are PNGs.
+
+**What can go wrong with these results.** One seed, 500 images (about +-2 points). The adaptive attacker is PGD with 10 steps and BPDA: stronger attacks (more steps, restarts, AutoAttack) would likely lower the adversarial-training numbers. Activation clipping may need tuning. The Raspberry Pi test was replaced by the browser test, and a desktop browser is not a phone. Adversarial training was a quick fine-tune; a full run on a GPU would probably do better.
+
+**Reproduce.**
+
+```bash
+python -m securetinyml.defenses.adv_train cifar10 --epochs 6 --eps 4 --seed 0
+python -m securetinyml.eval.run_defenses cifar10 --seed 0 --n 500
+python app/make_assets.py && python app/demo.py
+```
+
+**Concepts and one reading each**
+- *Adversarial training*: train on attacked images. Read Madry et al. 2018 (above); for the cheap version, Wong, Rice and Kolter 2020, "Fast is better than free: Revisiting adversarial training" (arXiv).
+- *BPDA / adaptive attacks*: differentiate through a defense by approximating its non-differentiable part. Read Athalye et al. 2018 (above) and Tramer et al. 2020, "On Adaptive Attacks to Adversarial Example Defenses" (arXiv).
+- *Input purification*: Xu et al. 2018, "Feature Squeezing" (arXiv), as in PLAN.md.
+- *Activation clipping*: the exact reference is still unverified (PLAN.md): find it before citing.

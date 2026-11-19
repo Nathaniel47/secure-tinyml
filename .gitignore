@@ -35,3 +35,7 @@ Thumbs.db
 *.log
 models/*.pre.onnx
 models/*_bd*
+models/defended/
+web/models/
+web/testset.*
+app/examples/

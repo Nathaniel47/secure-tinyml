@@ -2,7 +2,7 @@
 
 A study platform for adversarial patches, FGSM/PGD and backdoors on small image models, comparing full-precision (fp32) against int8-quantized versions, with cheap defenses (adversarial training, input purification, activation clipping) and a Gradio demo. A static page runs the int8 model in the browser on a phone with ONNX Runtime Web.
 
-Status: repo setup, data pipeline (CIFAR-10, GTSRB) and the first attacks (FGSM, PGD, patch, backdoor on CIFAR-10, fp32 vs int8) are done. Results so far are one seed and preliminary (int8 now matches fp32 accuracy after a kernel fix): see LEARNING.md (Step 4) and `results/attacks_cifar10_seed0.csv`. See [PLAN.md](PLAN.md) for the design.
+Status: repo setup, data pipeline (CIFAR-10, GTSRB), the attacks (FGSM, PGD, patch, backdoor on CIFAR-10, fp32 vs int8), three defenses, the Gradio demo and a browser test page are built. The phone test, evaluation on more seeds and datasets, and deployment are still to do. Results so far are one seed and preliminary (int8 now matches fp32 accuracy after a kernel fix): see LEARNING.md (Steps 4-5) and `results/*.csv`. See [PLAN.md](PLAN.md) for the design.
 
 Small models, small images, one phone: this is a study, not a claim about production edge devices. Dataset licences are not yet verified (see PLAN.md); no raw data is redistributed.
 
@@ -25,6 +25,8 @@ pip install -r requirements-dev.txt
 pytest
 python app/demo.py
 ```
+
+The demo needs `python app/make_assets.py` once (torch) to build its models, patches and example images; the browser page needs `python web/make_testset.py`. See LEARNING.md (Step 5).
 
 Training and attacks need `requirements-ml.txt` (torch, ART) and run best on Kaggle or Colab.
 

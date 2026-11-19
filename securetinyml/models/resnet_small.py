@@ -10,16 +10,29 @@ MEAN = (0.5, 0.5, 0.5)
 STD = (0.25, 0.25, 0.25)
 
 
+def act(x: torch.Tensor, owner: nn.Module) -> torch.Tensor:
+    """ReLU, optionally clipped at `owner.clip` (activation-clipping defense), optionally
+    recording a sample of the output in `owner.rec` (used to choose the clip value)."""
+    x = torch.relu(x)
+    if owner.clip is not None:
+        x = x.clamp(max=owner.clip)
+    if owner.rec is not None:
+        owner.rec.append(x.detach().flatten()[::5])
+    return x
+
+
 class ConvBN(nn.Module):
     def __init__(self, cin: int, cout: int, stride: int = 1, relu: bool = True):
         super().__init__()
         self.conv = nn.Conv2d(cin, cout, 3, stride, 1, bias=False)
         self.bn = nn.BatchNorm2d(cout)
         self.relu = relu
+        self.clip: float | None = None
+        self.rec: list | None = None
 
     def forward(self, x):
         x = self.bn(self.conv(x))
-        return torch.relu(x) if self.relu else x
+        return act(x, self) if self.relu else x
 
 
 class Block(nn.Module):
@@ -27,6 +40,8 @@ class Block(nn.Module):
         super().__init__()
         self.a = ConvBN(cin, cout, stride)
         self.b = ConvBN(cout, cout, 1, relu=False)
+        self.clip: float | None = None
+        self.rec: list | None = None
         self.skip = None
         if stride != 1 or cin != cout:
             self.skip = nn.Conv2d(cin, cout, 1, stride, bias=False)
@@ -34,7 +49,7 @@ class Block(nn.Module):
 
     def forward(self, x):
         s = x if self.skip is None else self.skip_bn(self.skip(x))
-        return torch.relu(self.b(self.a(x)) + s)
+        return act(self.b(self.a(x)) + s, self)
 
 
 class SmallResNet(nn.Module):

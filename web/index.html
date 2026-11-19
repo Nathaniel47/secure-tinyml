@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Secure TinyML: on-device test</title>
+<style>
+  :root { color-scheme: light dark; font-family: system-ui, sans-serif; }
+  body { max-width: 40rem; margin: 0 auto; padding: 1rem; line-height: 1.4; }
+  button, select, input { font: inherit; padding: .5rem .75rem; margin: .25rem 0; }
+  pre { background: #8881; padding: .75rem; overflow-x: auto; white-space: pre-wrap; }
+  canvas { image-rendering: pixelated; width: 128px; height: 128px; border: 1px solid #8886; }
+  .row { display: flex; gap: .5rem; flex-wrap: wrap; align-items: center; }
+</style>
+</head>
+<body>
+<h1>On-device test</h1>
+<p>Runs the exported CIFAR-10 ResNet in this browser with ONNX Runtime Web (WASM, CPU). It checks
+that the phone gives the same answers as the laptop and records the time per image.</p>
+
+<div class="row">
+  <label>Model
+    <select id="model">
+      <option value="models/cifar10_fp32_seed0_int8.onnx">int8 (about 100 KB)</option>
+      <option value="models/cifar10_fp32_seed0.onnx">fp32 (about 300 KB)</option>
+    </select>
+  </label>
+  <button id="load">Load model</button>
+</div>
+
+<h2>1. Test set (laptop vs this device)</h2>
+<p>Needs <code>testset.bin</code> and <code>testset.json</code> from
+<code>python web/make_testset.py</code> (not committed: CIFAR-10 images are not redistributed).</p>
+<button id="runset" disabled>Run test set</button>
+
+<h2>2. One image</h2>
+<div class="row">
+  <input type="file" id="file" accept="image/*" capture="environment">
+  <canvas id="cv" width="32" height="32"></canvas>
+</div>
+
+<h2>Result</h2>
+<pre id="out">Load a model first.</pre>
+
+<script src="https://cdn.jsdelivr.net/npm/onnxruntime-web@1.20.1/dist/ort.min.js"></script>
+<script>
+const CLASSES = ["airplane","automobile","bird","cat","deer","dog","frog","horse","ship","truck"];
+const SIDE = 32;
+let session = null, modelName = "", testset = null;
+const out = document.getElementById("out");
+const log = (s) => { out.textContent = s; };
+
+ort.env.wasm.numThreads = 1;  // threads need cross-origin isolation, which static hosts do not give
+
+function toTensor(rgba, n = 1) {
+  // rgba: Uint8 array of n*SIDE*SIDE*4 (canvas) -> float NCHW in [0, 1], as in training
+  const px = SIDE * SIDE, f = new Float32Array(n * 3 * px);
+  for (let i = 0; i < n; i++)
+    for (let p = 0; p < px; p++)
+      for (let c = 0; c < 3; c++)
+        f[i * 3 * px + c * px + p] = rgba[(i * px + p) * 4 + c] / 255;
+  return new ort.Tensor("float32", f, [n, 3, SIDE, SIDE]);
+}
+const argmax = (a) => a.indexOf(Math.max(...a));
+
+async function loadModel() {
+  const path = document.getElementById("model").value;
+  log("Loading " + path + " ...");
+  try {
+    session = await ort.InferenceSession.create(path, { executionProviders: ["wasm"] });
+    modelName = path;
+    document.getElementById("runset").disabled = false;
+    log("Loaded " + path + " (backend: wasm)");
+  } catch (e) {
+    session = null;
+    log("Could not load the model: " + e);
+  }
+}
+
+async function loadTestset() {
+  if (testset) return testset;
+  const [bin, meta] = await Promise.all([
+    fetch("testset.bin").then((r) => { if (!r.ok) throw new Error("testset.bin missing"); return r.arrayBuffer(); }),
+    fetch("testset.json").then((r) => { if (!r.ok) throw new Error("testset.json missing"); return r.json(); }),
+  ]);
+  testset = { px: new Uint8Array(bin), meta };
+  return testset;
+}
+
+async function runSet() {
+  try {
+    const { px, meta } = await loadTestset();
+    const n = meta.labels.length, per = SIDE * SIDE * 3;
+    const key = modelName.includes("int8") ? "pred_int8" : "pred_fp32";
+    let correct = 0, agree = 0, times = [];
+    for (let i = 0; i < n; i++) {
+      const rgba = new Uint8Array(SIDE * SIDE * 4);
+      for (let p = 0; p < SIDE * SIDE; p++)
+        for (let c = 0; c < 3; c++) rgba[p * 4 + c] = px[i * per + p * 3 + c];
+      const t0 = performance.now();
+      const res = await session.run({ x: toTensor(rgba) });
+      times.push(performance.now() - t0);
+      const pred = argmax(Array.from(res.logits.data));
+      if (pred === meta.labels[i]) correct++;
+      if (pred === meta[key][i]) agree++;
+      if (i % 20 === 0) log(`Running ${i}/${n} ...`);
+    }
+    times.sort((a, b) => a - b);
+    const result = {
+      model: modelName, backend: "wasm", images: n,
+      accuracy: +(correct / n).toFixed(4),
+      agreement_with_laptop: +(agree / n).toFixed(4),
+      median_ms_per_image: +times[Math.floor(n / 2)].toFixed(2),
+      p95_ms: +times[Math.floor(n * 0.95)].toFixed(2),
+      user_agent: navigator.userAgent,
+    };
+    log(JSON.stringify(result, null, 2));
+  } catch (e) { log("Test set run failed: " + e); }
+}
+
+async function runImage(file) {
+  if (!session) { log("Load a model first."); return; }
+  const bmp = await createImageBitmap(file);
+  const cv = document.getElementById("cv"), ctx = cv.getContext("2d");
+  const s = Math.min(bmp.width, bmp.height);  // centre square crop, then resize
+  ctx.drawImage(bmp, (bmp.width - s) / 2, (bmp.height - s) / 2, s, s, 0, 0, SIDE, SIDE);
+  const rgba = ctx.getImageData(0, 0, SIDE, SIDE).data;
+  const t0 = performance.now();
+  const res = await session.run({ x: toTensor(rgba) });
+  const ms = performance.now() - t0;
+  const z = Array.from(res.logits.data), m = Math.max(...z);
+  const e = z.map((v) => Math.exp(v - m)), sum = e.reduce((a, b) => a + b);
+  const top = e.map((v, i) => [v / sum, i]).sort((a, b) => b[0] - a[0]).slice(0, 3);
+  log(top.map(([p, i]) => `${CLASSES[i].padEnd(11)} ${(p * 100).toFixed(1)}%`).join("\n") + `\n\n${ms.toFixed(1)} ms`);
+}
+
+document.getElementById("load").onclick = loadModel;
+document.getElementById("runset").onclick = runSet;
+document.getElementById("file").onchange = (ev) => ev.target.files[0] && runImage(ev.target.files[0]);
+</script>
+</body>
+</html>
