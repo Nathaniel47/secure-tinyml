@@ -65,10 +65,16 @@ def build_space(out: Path) -> None:
 
 def build_site(out: Path) -> None:
     out = _fresh(out)
-    shutil.copy(ROOT / "web" / "index.html", out / "index.html")
+    for page in ("index.html", "demo.html"):
+        shutil.copy(ROOT / "web" / page, out / page)
     (out / "models").mkdir()
     for f in SITE_MODELS:
         shutil.copy(ROOT / "models" / f, out / "models" / f)
+    assets = ROOT / "app" / "assets"
+    shutil.copy(assets / "defended_int8.onnx", out / "models" / "defended_int8.onnx")
+    (out / "patches").mkdir()
+    for f in sorted(assets.glob("patch_*.png")):
+        shutil.copy(f, out / "patches" / f.name)
     (out / ".nojekyll").write_text("")
 
 

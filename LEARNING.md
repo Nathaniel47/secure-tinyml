@@ -220,3 +220,9 @@ The unpoisoned model almost never sends triggered images to the target (2.4% and
 - Add a LICENSE file and tell me which one.
 - Record a short GIF of the demo (`docs/demo.gif`).
 - Read one recent paper per professor and tailor the sentence; I did not look up their work, so none is named.
+
+## Step 7b: Browser-only demo (replaces the unhosted Gradio Space)
+
+**Why.** Hugging Face's free tier no longer hosts Gradio Spaces (HTTP 402, PRO needed), so the demo that could not be hosted for free is now also a static page: `web/demo.html`. It loads the fp32, int8 and adversarially trained int8 ONNX models in the browser (ONNX Runtime Web, WASM), takes an uploaded or camera image (cropped to a square, shrunk to 32x32), pastes one of three pre-computed patches at a chosen position and shows each model's top 3 classes and time. Nothing is uploaded anywhere.
+
+**Checked.** On a synthetic 32x32 image with no patch, the 10% patch and the 4% patch, the page's probabilities match the Python demo to about 4 decimals for all three models (largest gap 0.0002, int8 with the 10% patch, which is rounding between the two runtimes). Image resizing differs slightly (browser canvas versus Pillow) for photos that are not already 32x32. Not tested on a phone.

@@ -6,7 +6,7 @@
 
 Secure TinyML is a study of what happens to adversarial attacks when a small image classifier is squeezed to int8 for a phone or microcontroller. I trained a tiny ResNet on CIFAR-10 and GTSRB, then attacked the full-precision and int8 versions with hand-written FGSM and PGD, adversarial patches and a backdoor, and tested three defenses against attackers who know about them. Over three seeds, int8 matched fp32 on accuracy and robustness, attacks transferred between them almost completely, and only adversarial training clearly helped. A planted backdoor weakened under int8. A local Gradio demo and a live in-browser ONNX Runtime Web page let anyone try it, using small exported ONNX model files. Results are small-scale and the limitations are written down.
 
-**Links:** repo https://github.com/Nathaniel47/secure-tinyml · phone page https://nathaniel47.github.io/secure-tinyml/ · Gradio demo: run locally (README) · write-up `docs/technical-writeup.md`
+**Links:** repo https://github.com/Nathaniel47/secure-tinyml · live browser demo https://nathaniel47.github.io/secure-tinyml/demo.html · phone test page https://nathaniel47.github.io/secure-tinyml/ · write-up `docs/technical-writeup.md`
 
 **Tags:** adversarial machine learning, quantization, edge AI, backdoors, ONNX, PyTorch
 

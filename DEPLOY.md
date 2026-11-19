@@ -1,6 +1,6 @@
 # Deploying the demo and the phone page
 
-**Status (2026-11-19):** the phone page is live at https://nathaniel47.github.io/secure-tinyml/ (GitHub Pages, deployed from the `pages` workflow). The Gradio demo is **not hosted**: creating the Space failed with HTTP 402, because Hugging Face now requires a PRO subscription for Gradio and Docker Spaces on CPU (static Spaces stay free). Nothing was bought. Options: pay for PRO; host the Gradio app on another free service (needs its own account); or run it locally (`python app/demo.py`). The Space steps below remain valid if you take the first option.
+**Status (2026-11-19):** the phone page is live at https://nathaniel47.github.io/secure-tinyml/ (GitHub Pages, deployed from the `pages` workflow). A browser-only version of the demo (all three models and the patches, run client-side) is live at https://nathaniel47.github.io/secure-tinyml/demo.html. The Python Gradio demo is **not hosted**: creating the Space failed with HTTP 402, because Hugging Face now requires a PRO subscription for Gradio and Docker Spaces on CPU (static Spaces stay free). Nothing was bought. Options: pay for PRO; host the Gradio app on another free service (needs its own account); or run it locally (`python app/demo.py`). The Space steps below remain valid if you take the first option.
 
 | What | Where | Built from |
 |---|---|---|

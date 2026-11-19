@@ -25,7 +25,14 @@ def test_space_has_front_matter_demo_and_no_example_images(tmp_path):
 def test_site_has_page_and_models_but_no_test_set(tmp_path):
     build.build_site(tmp_path / "w")
     w = tmp_path / "w"
-    assert (w / "index.html").exists() and (w / ".nojekyll").exists()
+    assert (w / "index.html").exists() and (w / "demo.html").exists()
+    assert (w / ".nojekyll").exists()
+    assert (w / "models" / "defended_int8.onnx").exists()
+    assert sorted(f.name for f in (w / "patches").glob("*.png")) == [
+        "patch_10.png",
+        "patch_4.png",
+        "patch_7.png",
+    ]
     assert not list(w.glob("testset*"))
     for f in build.SITE_MODELS:
         assert (w / "models" / f).exists()
