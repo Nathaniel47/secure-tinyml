@@ -32,3 +32,6 @@ results/*.log
 .idea/
 .DS_Store
 Thumbs.db
+*.log
+models/*.pre.onnx
+models/*_bd*

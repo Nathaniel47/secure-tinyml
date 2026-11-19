@@ -38,3 +38,41 @@ The demo only loads exported `.onnx` files, so the public app never needs the tr
 **How to check it.** `pytest` (14 tests: splits are disjoint, complete, stratified, reproducible, keep groups together, change when the seed changes; loaders handle the CIFAR, GTSRB and PlantVillage layouts), then the three commands in the README.
 
 **Reading.** Stallkamp et al. 2012, "Man vs. computer: Benchmarking machine learning algorithms for traffic sign recognition" (Neural Networks), section on the dataset: why the track structure matters.
+
+## Step 4: Attacks on full vs quantized models
+
+**What was built.** A small ResNet (0.15M parameters) trained on CIFAR-10, exported to ONNX and quantized to int8, plus four attacks and a runner that measures them on both versions. All numbers below are **one seed (0), CIFAR-10 only, 1,000 test images (200 for the black-box attack)**: a first look, not a result. Repeats with several seeds, GTSRB and the report come in Step 6.
+- `securetinyml/attacks/evasion.py`: FGSM and PGD, written by hand, plus `random_search`, a query-only attack for models with no usable gradient.
+- `attacks/patch.py`: an adversarial patch, a visible square learned by gradient descent so that, pasted anywhere, it pushes the image towards a chosen class (airplane here).
+- `attacks/backdoor.py`: a BadNets-style backdoor: a 4x4 black-and-white checker in the corner, stamped on 5% of the training images, which are relabelled "airplane".
+- `models/quantize.py`: ONNX export, static int8 quantization (what would ship to the phone), and a **fake-quant surrogate**.
+- `eval/run_attacks.py` writes `results/attacks_cifar10_seed0.csv`; `models/train.py` trains (with checkpoints, so a crash loses at most one epoch).
+
+**Why a surrogate.** Rounding to int8 has zero gradient, so a gradient attack cannot be run through the real int8 model. The surrogate does the same rounding but lets the gradient pass straight through (a "straight-through estimator"). It is not QAT (no retraining) and not the same arithmetic as ONNX Runtime's kernels; it is an approximation the attacker can differentiate.
+
+**Key numbers (CIFAR-10, seed 0)**
+- Clean accuracy: fp32 **79.9%**, int8 **72.3%**. Only 83.5% of predictions agree. That is a large quantization loss, probably because the model is tiny, calibration used 500 images with min/max ranges and there was no quantization-aware training. It also confounds everything below that compares the two.
+- FGSM/PGD (accuracy under attack, crafted on fp32, eps in 1/255): at eps 2, PGD takes fp32 to 3.9% and int8 to 11.1%; at eps 4 PGD gives 0.0% and 0.8%; at eps 8 both are about 0%. Of the adversarial examples that fool fp32, 91-100% also fool int8 ("transfer rate"), so quantization does **not** protect against attacks crafted on the full-precision model. int8 ends up slightly *higher* in accuracy under attack, but it also starts lower, and I would not read that as robustness.
+- Surrogate vs fp32: attacks crafted on the surrogate are almost identical to those crafted on fp32 (e.g. PGD eps 2 gives 11.1% on int8 both ways), so with this model the surrogate adds little.
+- Black-box check (query-only, 300 queries, 200 images, int8): accuracy 57.5% at eps 2, 44.0% at eps 4, 21.5% at eps 8. Weaker than white-box but far from "robust": it rules out the idea that int8 simply hides its gradients.
+- Adversarial patch (target class airplane, share of non-airplane images sent to airplane, patch covers 4/7/10% of the image): fp32 20% / 49% / 85%; int8 18% / 38% / 76%. A patch trained against fp32 transfers to int8 with a modest drop.
+- Backdoor (5% poison): the poisoned fp32 model sends **100%** of triggered images to airplane at 77.9% clean accuracy, but the poisoned int8 model only **48%** at 73.3% clean accuracy. So quantization weakened this backdoor, but the int8 model is also generally worse, I did not measure how often an *un*poisoned model sends triggered images to airplane (a baseline), and it is one seed. Treat as a lead to test in Step 6, not a finding.
+
+**What can go wrong with these results.** One seed, one dataset, 1,000 images (about +-1.3 points of sampling error on 80%). The int8 model loses 7.6 points of clean accuracy, so int8-vs-fp32 comparisons are not like for like. Calibration data were clean training images. The random-search attack is simplified, not the published Square Attack. GTSRB and PlantVillage were not run.
+
+**How to run and check.** `pytest` (31 tests; the torch and ONNX ones are skipped on CI without torch): FGSM with eps 0 changes nothing, perturbations stay within eps and in [0, 1], accuracy falls as eps grows, PGD is at least as strong as FGSM, a trained patch raises the target rate, only the patch region changes, the trigger only touches its corner, poisoning hits the right rate and classes, folded BatchNorm matches the original, the surrogate rounds to 256 levels and passes gradients, and the int8 ONNX file is smaller and runs. To reproduce the numbers (CPU, about 4 minutes per epoch):
+
+```bash
+pip install -r requirements-ml.txt
+python -m securetinyml.models.train cifar10 --epochs 10 --seed 0
+python -m securetinyml.models.train cifar10 --epochs 8 --seed 0 --poison-rate 0.05
+python -m securetinyml.eval.run_attacks cifar10 --seed 0 --n 1000 --bd 0.05
+```
+
+**Concepts and one reading each**
+- *FGSM / PGD*: one or many gradient-sign steps that increase the loss inside a small box. Read Madry et al. 2018, "Towards Deep Learning Models Resistant to Adversarial Attacks" (arXiv).
+- *Adversarial patch*: a visible, location-independent sticker. Read Brown et al. 2017, "Adversarial Patch" (arXiv).
+- *Backdoor / poisoning*: a hidden trigger planted through the training data. Read Gu et al. 2017, "BadNets" (arXiv).
+- *Quantization*: int8 weights and activations. Read Jacob et al. 2018, "Quantization and Training of Neural Networks for Efficient Integer-Arithmetic-Only Inference" (arXiv).
+- *Straight-through estimator*: pretend rounding has gradient 1. Read Bengio et al. 2013, "Estimating or Propagating Gradients Through Stochastic Neurons" (arXiv).
+- *Gradient masking*: why a failed gradient attack proves little. Read Athalye et al. 2018, "Obfuscated Gradients Give a False Sense of Security" (arXiv).
