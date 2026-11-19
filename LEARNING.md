@@ -197,3 +197,13 @@ The unpoisoned model almost never sends triggered images to the target (2.4% and
 **Concepts and one reading each**
 - *Confidence intervals over seeds*: how much a result moves when you retrain. Read Colas et al. 2018, "How Many Random Seeds? Statistical Power Analysis in Deep Reinforcement Learning Experiments" (arXiv): the lesson (3 seeds is thin) applies here.
 - *AutoAttack*: the standard stronger evaluation. Read Croce and Hein 2020, "Reliable evaluation of adversarial robustness with an ensemble of diverse parameter-free attacks" (arXiv).
+
+## Step 7: Packaging for hosting (nothing published yet)
+
+**What was built.** `deploy/build.py` assembles two folders that can be pushed or uploaded as they are: a Hugging Face Space (the Gradio demo, its three ONNX models and three patch PNGs, a README with the Space settings and a pinned Gradio 6.32.0) and a static site (the phone page plus the fp32 and int8 CIFAR-10 models, about 0.4 MB). `.github/workflows/pages.yml` publishes the site to GitHub Pages, but only when run by hand. `DEPLOY.md` has the exact steps, including the laptop-over-Wi-Fi phone test.
+
+**Checked.** The built Space folder runs the demo logic from its own directory (all three models and all three patches load and classify). The built site, served locally, loads the int8 model in ONNX Runtime Web and classifies a generated image in about 3 ms; the hosted page's "Run test set" button reports that the test set is missing, by design.
+
+**Decisions left to you.** Creating the Hugging Face account/Space and enabling GitHub Pages are public actions under your accounts, so I did not do them. I also did not add a licence field to the Space or a LICENSE file to the repo: pick one (MIT matches the sibling projects) before announcing. No CIFAR-10 or GTSRB image is in either package, so the Space has upload only, no example gallery.
+
+**Not verified.** A real Hugging Face build (Gradio 6.32.0 and the free CPU image have not been tried together), the GitHub Pages workflow itself (never run), and the phone.

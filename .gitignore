@@ -39,3 +39,4 @@ models/defended/
 web/models/
 web/testset.*
 app/examples/
+out/
