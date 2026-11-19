@@ -65,6 +65,50 @@ def defense_chart(dfn: pd.DataFrame, eps: int = 2) -> None:
     fig.savefig(RESULTS / "chart_defenses.png", dpi=150)
 
 
+CLEAN_LABELS = {
+    ("fp32", "none"): "No defense",
+    ("fp32", "clip"): "Activation clipping",
+    ("fp32", "purify"): "Purify (4-bit)",
+    ("fp32", "purify_blur"): "Purify (5-bit + blur)",
+    ("advtrain", "none"): "Adversarial training",
+}
+
+
+def defense_chart_clean(dfn: pd.DataFrame, eps: int = 2) -> None:
+    """Plain-labelled version of defense_chart for the portfolio: five defenses, one row each."""
+    d = dfn[
+        (dfn.attack == "pgd10")
+        & (dfn.strength == eps)
+        & (dfn.evaluated_on == "int8")
+        & (dfn.metric == "accuracy")
+    ]
+    sets = sorted(d.dataset.unique())
+    fig, axes = plt.subplots(1, len(sets), figsize=(5.4 * len(sets), 3.6), squeeze=False)
+    labels = list(CLEAN_LABELS.values())
+    y = np.arange(len(labels))[::-1]
+    for ax, ds in zip(axes[0], sets, strict=True):
+        for kind, col, off in (("non-adaptive", GREY, 0.2), ("adaptive", ORANGE, -0.2)):
+            g = d[(d.dataset == ds) & (d.adaptivity == kind)].set_index(["weights", "defense"])
+            g = g.reindex(list(CLEAN_LABELS))
+            mean = g["mean"].to_numpy() * 100
+            err = np.minimum(_err(g), np.minimum(mean, 100 - mean))  # keep whiskers inside 0-100
+            ax.barh(y + off, mean, 0.38, xerr=err, color=col, capsize=2.5, label=kind)
+            for yi, m, e in zip(y + off, mean, err, strict=True):
+                ax.text(m + e + 1.5, yi, f"{m:.0f}%", va="center", fontsize=8)
+        ax.set_yticks(y, labels, fontsize=9)
+        ax.set_xlim(0, 108)
+        ax.set_xlabel("accuracy under attack (%)")
+        ax.set_title({"cifar10": "CIFAR-10", "gtsrb": "GTSRB"}.get(ds, ds), fontsize=11)
+        ax.spines[["top", "right"]].set_visible(False)
+        ax.xaxis.grid(True, alpha=0.25)
+        ax.set_axisbelow(True)
+    axes[0][0].legend(loc="upper right", frameon=False, fontsize=8.5)
+    title = f"int8 model accuracy under PGD-10 (eps {eps}/255); whiskers show 95% interval"
+    fig.suptitle(title, y=0.99)
+    fig.tight_layout()
+    fig.savefig(RESULTS / "chart_defenses_clean.png", dpi=150)
+
+
 def patch_backdoor_chart(att: pd.DataFrame) -> None:
     d = att[(att.metric == "target_success_rate") & (att.attack.isin(["patch", "backdoor"]))]
     d = d[(d.crafted_on.isin(["fp32", "-"]))]
@@ -94,6 +138,7 @@ def main() -> None:
         patch_backdoor_chart(a)
     if dfn.exists():
         defense_chart(pd.read_csv(dfn))
+        defense_chart_clean(pd.read_csv(dfn))
     print("charts written to", RESULTS)
 
 
