@@ -2,7 +2,7 @@
 
 A study platform for adversarial patches, FGSM/PGD and backdoors on small image models, comparing full-precision (fp32) against int8-quantized versions, with cheap defenses (adversarial training, input purification, activation clipping) and a Gradio demo. A static page runs the int8 model in the browser on a phone with ONNX Runtime Web.
 
-Status: repo setup, data pipeline (CIFAR-10, GTSRB) and the first attacks (FGSM, PGD, patch, backdoor on CIFAR-10, fp32 vs int8) are done. Results so far are one seed and preliminary: see LEARNING.md (Step 4) and `results/attacks_cifar10_seed0.csv`. See [PLAN.md](PLAN.md) for the design.
+Status: repo setup, data pipeline (CIFAR-10, GTSRB) and the first attacks (FGSM, PGD, patch, backdoor on CIFAR-10, fp32 vs int8) are done. Results so far are one seed and preliminary (int8 now matches fp32 accuracy after a kernel fix): see LEARNING.md (Step 4) and `results/attacks_cifar10_seed0.csv`. See [PLAN.md](PLAN.md) for the design.
 
 Small models, small images, one phone: this is a study, not a claim about production edge devices. Dataset licences are not yet verified (see PLAN.md); no raw data is redistributed.
 

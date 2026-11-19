@@ -70,3 +70,17 @@ def test_onnx_export_and_int8_agree_with_fp32(tmp_path):
     out8 = i8.run(None, {"x": x.numpy()})[0]
     assert out8.shape == ref.shape
     assert (tmp_path / "m8.onnx").stat().st_size < (tmp_path / "m.onnx").stat().st_size
+
+
+def test_int8_graph_uses_signed_activations(tmp_path):
+    onnx = pytest.importorskip("onnx")
+    pytest.importorskip("onnxruntime")
+    from securetinyml.models.quantize import export_onnx, quantize_int8
+
+    m = SmallResNet(10).eval()
+    export_onnx(m, tmp_path / "m.onnx", 32)
+    quantize_int8(tmp_path / "m.onnx", tmp_path / "m8.onnx", torch.rand(8, 3, 32, 32).numpy())
+    g = onnx.load(str(tmp_path / "m8.onnx")).graph
+    zp = {i.name: i.data_type for i in g.initializer}
+    q = [n for n in g.node if n.op_type == "QuantizeLinear"]
+    assert q and all(zp[n.input[2]] == onnx.TensorProto.INT8 for n in q)

@@ -32,8 +32,12 @@ def export_onnx(model: nn.Module, path: Path, side: int) -> None:
 
 
 def quantize_int8(fp32_path: Path, out_path: Path, calib: np.ndarray) -> None:
-    """Static post-training quantization, QDQ format, per-channel int8 weights, uint8
-    activations, min/max calibration on `calib` (float NCHW in [0, 1])."""
+    """Static post-training quantization, QDQ format, per-channel int8 weights, int8
+    activations, min/max calibration on `calib` (float NCHW in [0, 1]).
+
+    Activations are int8, not uint8: ONNX Runtime's uint8 x int8 CPU kernel can saturate its
+    16-bit intermediate sums, which cost 7 points of CIFAR-10 accuracy here (80% -> 73%)
+    whatever the calibration. int8 x int8 does not (LEARNING.md, Step 4b)."""
     from onnxruntime.quantization import (
         CalibrationDataReader,
         QuantFormat,
@@ -59,9 +63,26 @@ def quantize_int8(fp32_path: Path, out_path: Path, calib: np.ndarray) -> None:
         quant_format=QuantFormat.QDQ,
         per_channel=True,
         weight_type=QuantType.QInt8,
-        activation_type=QuantType.QUInt8,
+        activation_type=QuantType.QInt8,
     )
     prepped.unlink()
+
+
+def requantize(stem: str, dataset: str, seed: int, n_calib: int = 500) -> None:
+    """Rebuild models/<stem>_int8.onnx from the existing fp32 .onnx, without retraining."""
+    from securetinyml.data.common import load_splits
+    from securetinyml.data.load import get_dataset
+    from securetinyml.models.train import MODELS, to_tensor
+
+    d, sp = get_dataset(dataset), load_splits(dataset, seed)
+    calib = to_tensor(d["x_train"][sp["train"]][:n_calib]).numpy()
+    quantize_int8(MODELS / f"{stem}.onnx", MODELS / f"{stem}_int8.onnx", calib)
+
+
+if __name__ == "__main__":
+    import sys
+
+    requantize(sys.argv[1], sys.argv[2], int(sys.argv[3]))
 
 
 class _STERound(torch.autograd.Function):
