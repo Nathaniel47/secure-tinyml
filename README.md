@@ -123,10 +123,10 @@ Code licence: **none yet.** Add a LICENSE file before announcing the repo.
 - **Attack strength:** 10-step PGD with no restarts and no AutoAttack, so every robust number is an upper bound. The adaptive attack on purification is BPDA (straight-through gradient); a cleverer one may do better. The query-only attack is a simplified random search, not the published Square Attack. The patch and backdoor are not cross-checked against ART.
 - **Quantization:** one toolchain (ONNX Runtime static int8, min/max calibration); the fake-quant surrogate is not QAT; a TFLite cross-check was not attempted; one result depends on a kernel setting.
 - **Defenses:** adversarial training is the cheap one-step version at one eps (4/255); activation clipping used one cap (99.9th percentile) and may need tuning.
-- **Device:** the browser test matched the laptop on 200 of 200 images in a desktop browser only. The real-phone test is still to do, and WebGPU and the Raspberry Pi were out of scope.
+- **Device:** on one Android phone (Chrome, WASM) and one desktop browser the in-browser models matched the laptop on 200 of 200 images; phone latency was 8.5 ms (int8) and 7.2 ms (fp32) per image, so int8 gave no speed-up there. One phone, one run; WebGPU and the Raspberry Pi were out of scope.
 - **Not done:** PlantVillage, backdoor detection, hosted demo.
 - **Data:** dataset licences are unverified (above).
 
 ## Future work
 
-Real-phone accuracy and latency; AutoAttack and stronger adaptive attacks; quantization-aware training and a second int8 toolchain (TFLite, on Colab); more seeds for the backdoor result and a test of why int8 weakens it; tuned activation clipping and full PGD adversarial training on a GPU; backdoor detection (activation clustering); PlantVillage; larger models.
+More phones and repeated latency runs; AutoAttack and stronger adaptive attacks; quantization-aware training and a second int8 toolchain (TFLite, on Colab); more seeds for the backdoor result and a test of why int8 weakens it; tuned activation clipping and full PGD adversarial training on a GPU; backdoor detection (activation clustering); PlantVillage; larger models.

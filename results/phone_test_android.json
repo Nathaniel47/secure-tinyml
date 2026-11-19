@@ -1,0 +1,23 @@
+{
+  "note": "Real-phone run of web/index.html served from the laptop over Wi-Fi, 200 CIFAR-10 test images (web/make_testset.py, seed 123). Pasted by the project owner, 2026-11-19.",
+  "int8": {
+    "model": "models/cifar10_fp32_seed0_int8.onnx",
+    "backend": "wasm",
+    "images": 200,
+    "accuracy": 0.81,
+    "agreement_with_laptop": 1,
+    "median_ms_per_image": 8.5,
+    "p95_ms": 17.9,
+    "user_agent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Mobile Safari/537.36"
+  },
+  "fp32": {
+    "model": "models/cifar10_fp32_seed0.onnx",
+    "backend": "wasm",
+    "images": 200,
+    "accuracy": 0.81,
+    "agreement_with_laptop": 1,
+    "median_ms_per_image": 7.2,
+    "p95_ms": 11.8,
+    "user_agent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Mobile Safari/537.36"
+  }
+}

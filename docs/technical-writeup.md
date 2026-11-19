@@ -78,7 +78,7 @@ An unpoisoned model almost never sends triggered images to the target class, so 
 - **Activation clipping did nothing** with one cap setting.
 - Defenses added at most 6 KB to the 100 KB int8 file and under about 0.2 ms to single-image CPU latency (close to timing noise on a busy laptop).
 
-**On-device.** The int8 and fp32 ONNX models load in ONNX Runtime Web (WASM backend) and agree with the laptop on 200 of 200 CIFAR-10 test images in a desktop browser, at about 3.5 ms per image. A real phone has not been tested yet.
+**On-device.** The int8 and fp32 ONNX models load in ONNX Runtime Web (WASM backend) and agree with the laptop on 200 of 200 CIFAR-10 test images in a desktop browser (about 3.5 ms per image) and on a real Android 10 phone (Chrome 157): 81% accuracy for both, 200/200 agreement, median 8.5 ms per image for int8 (p95 17.9 ms) and 7.2 ms for fp32 (p95 11.8 ms). The int8 graph therefore runs correctly on the phone, but it was not faster than fp32 here: for a 0.15M-parameter model the browser's WASM overhead likely dominates, and this is one phone and one run.
 
 ## 4. Lessons learned
 
@@ -90,9 +90,9 @@ An unpoisoned model almost never sends triggered images to the target class, so 
 
 ## 5. Limitations and what is next
 
-Limitations (full list in the README): 3 seeds and 500 images per grid; backdoor results one seed per rate; one tiny ResNet at 32x32 on a CPU; 10-step PGD without restarts or AutoAttack, so robust numbers are upper bounds; a simplified query-only attack; one quantization toolchain and a surrogate that is not QAT; cheap one-step adversarial training at one eps; one clipping cap; desktop browser only; PlantVillage and backdoor detection not done; dataset licences unverified.
+Limitations (full list in the README): 3 seeds and 500 images per grid; backdoor results one seed per rate; one tiny ResNet at 32x32 on a CPU; 10-step PGD without restarts or AutoAttack, so robust numbers are upper bounds; a simplified query-only attack; one quantization toolchain and a surrogate that is not QAT; cheap one-step adversarial training at one eps; one clipping cap; one phone, one run; PlantVillage and backdoor detection not done; dataset licences unverified.
 
-Next: a real-phone run and latency; AutoAttack and stronger adaptive attacks on purification; QAT and a second int8 toolchain (TFLite on Colab); more seeds for the backdoor, with a test of why int8 weakens it; tuned clipping and full PGD adversarial training on a GPU; activation-clustering backdoor detection.
+Next: more phones and repeated latency runs; AutoAttack and stronger adaptive attacks on purification; QAT and a second int8 toolchain (TFLite on Colab); more seeds for the backdoor, with a test of why int8 weakens it; tuned clipping and full PGD adversarial training on a GPU; activation-clustering backdoor detection.
 
 ## References
 

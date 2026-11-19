@@ -105,7 +105,9 @@ python -m securetinyml.eval.run_attacks cifar10 --seed 0 --n 1000 --bd 0.05
 - **int8 and fp32 behave the same** under every defense (adaptive attacks transfer in both directions), and no defense added a measurable latency cost (all within 0.3-0.9 ms single-image CPU, which is timing noise) or more than 6 KB of model size.
 - Black-box accuracy on purified models is *lower* than on the undefended one (33.8% vs 52.4% at eps 4). I did not investigate why; the likely reason is that the 4-bit rounding makes the model's margins small, so random noise flips it more easily, but that is a guess.
 
-**Browser test.** `web/index.html` runs the fp32 and int8 models with ONNX Runtime Web (WASM backend, 1.20.1 from a CDN). In the desktop in-app browser both load, and both agree with the laptop on **200 of 200** images (81% accuracy on this subset), at about 3.5 ms per image. **This was not a phone**: the phone result (accuracy match and latency) still needs your run. To do it: `python web/make_testset.py`, then in `web/` run `python -m http.server 8000`, open `http://<laptop-ip>:8000` on the phone on the same Wi-Fi, choose a model, load it and press "Run test set"; copy the JSON that appears. WebGPU was not tried.
+**Browser test.** `web/index.html` runs the fp32 and int8 models with ONNX Runtime Web (WASM backend, 1.20.1 from a CDN). In the desktop in-app browser both load, and both agree with the laptop on **200 of 200** images (81% accuracy on this subset), at about 3.5 ms per image. **This desktop run was not a phone**; the phone run is below. To do it: `python web/make_testset.py`, then in `web/` run `python -m http.server 8000`, open `http://<laptop-ip>:8000` on the phone on the same Wi-Fi, choose a model, load it and press "Run test set"; copy the JSON that appears. WebGPU was not tried.
+
+**Real phone (Android 10, Chrome 157, WASM backend, one run, 200 images):** int8 and fp32 both give 81% accuracy and agree with the laptop on **200 of 200** images; median time per image is 8.5 ms for int8 (p95 17.9 ms) and 7.2 ms for fp32 (p95 11.8 ms). So the int8 graph runs correctly on the phone's runtime, but on this tiny model int8 is not faster than fp32 in the browser's WASM backend (one run, one phone: timing differences of this size may be noise). Raw numbers: `results/phone_test_android.json`.
 
 **Demo.** `python app/make_assets.py` (needs torch) copies the models, trains one patch per size against the fp32 model and saves a few example images; `python app/demo.py` then serves it. It shows fp32, int8 and the adversarially trained int8 side by side. On 8 example images a 10%-area patch flips fp32 and int8 on 7 of 8 while the defended model is fooled on 3 of 8; this is a spot check, not a measurement. The example images and the CIFAR-10 test set are not committed (licence unverified); the committed patches are PNGs.
 
@@ -190,7 +192,7 @@ The unpoisoned model almost never sends triggered images to the target (2.4% and
 - **Attacks.** PGD with 10 steps and no restarts: stronger attacks (AutoAttack, more steps) would likely lower every robust number, adversarial training included. The adaptive attack against purification is BPDA with a straight-through gradient; a cleverer one may do better. The query-only attack is a simplified random search, not the published Square Attack.
 - **Models.** One tiny ResNet (about 0.15M parameters), 32x32 images, CPU-trained with short schedules; accuracy is below what a bigger model or a GPU run would reach. Adversarial training is the cheap one-step version at one eps (4/255), tested up to 8.
 - **Quantization.** One toolchain (ONNX Runtime static int8, per-channel, min/max calibration), and one result that depends on a kernel setting (Step 4b). The fake-quant surrogate is not QAT. A TFLite cross-check was not attempted.
-- **Phone.** The browser test agreed with the laptop on a desktop browser only; the real-phone check and latency are still the user's to run.
+- **Phone.** The browser test agreed with the laptop on 200/200 images on a desktop browser and on one Android phone (8.5 ms int8, 7.2 ms fp32 per image); one phone, one run.
 - **Not done:** PlantVillage, backdoor detection (activation clustering), ART cross-check of patch and backdoor, WebGPU, TFLite.
 - **Licences.** CIFAR-10 and GTSRB redistribution terms are still unverified in the README; no dataset images are in the repo.
 
@@ -216,7 +218,7 @@ The unpoisoned model almost never sends triggered images to the target (2.4% and
 
 **Things to do before sending anything out.**
 - Publish the demo and phone page (DEPLOY.md) and replace the two `TODO` links in README.md and PORTFOLIO.md.
-- Run the real-phone test and add its JSON to LEARNING.md and the write-up.
+- ~~Run the real-phone test~~ done 2026-11-19 (see Step 5, Real phone).
 - Add a LICENSE file and tell me which one.
 - Record a short GIF of the demo (`docs/demo.gif`).
 - Read one recent paper per professor and tailor the sentence; I did not look up their work, so none is named.
