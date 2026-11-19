@@ -228,3 +228,10 @@ The unpoisoned model almost never sends triggered images to the target (2.4% and
 **Why.** Hugging Face's free tier no longer hosts Gradio Spaces (HTTP 402, PRO needed), so the demo that could not be hosted for free is now also a static page: `web/demo.html`. It loads the fp32, int8 and adversarially trained int8 ONNX models in the browser (ONNX Runtime Web, WASM), takes an uploaded or camera image (cropped to a square, shrunk to 32x32), pastes one of three pre-computed patches at a chosen position and shows each model's top 3 classes and time. Nothing is uploaded anywhere.
 
 **Checked.** On a synthetic 32x32 image with no patch, the 10% patch and the 4% patch, the page's probabilities match the Python demo to about 4 decimals for all three models (largest gap 0.0002, int8 with the 10% patch, which is rounding between the two runtimes). Image resizing differs slightly (browser canvas versus Pillow) for photos that are not already 32x32. Not tested on a phone.
+
+## Wrap-up items done after Step 8
+
+- **LICENSE:** MIT, code only (copyright line uses the GitHub handle). The datasets are excluded and keep their own terms.
+- **CI:** the `tests` workflow passed on every push (latest `d9fc1ec`).
+- **Demo GIF:** `docs/demo.gif`, four frames recorded from the live browser demo on a synthetic sea-like image: no patch, then 4, 7 and 10% patches. fp32 and int8 move from "ship" (62-63%) to "airplane" (97-100%); the adversarially trained model stays on "ship" (66-81%). A synthetic image was used so that no CIFAR-10 image is redistributed.
+- **Professor sentences:** tailored drafts added to PORTFOLIO.md from a web search (RIT, Guelph, UCC); Aalborg had no clearly matching page, so none was drafted. Read a recent paper from each person before sending.

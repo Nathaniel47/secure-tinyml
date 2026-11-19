@@ -5,8 +5,11 @@
 - **Browser demo (live):** https://nathaniel47.github.io/secure-tinyml/demo.html runs the fp32, int8 and defended int8 models side by side in your browser (ONNX Runtime Web) with pre-computed adversarial patches; upload or photograph an image. Nothing leaves your device.
 - **Phone test page (live):** https://nathaniel47.github.io/secure-tinyml/ loads the int8 or fp32 model and, from a laptop over Wi-Fi, checks agreement with the laptop (see [DEPLOY.md](DEPLOY.md)).
 - **Gradio demo (Python version):** not hosted. Run it locally (below). Hugging Face's free tier no longer hosts Gradio Spaces without a PRO subscription (see [DEPLOY.md](DEPLOY.md)).
-- **Demo GIF:** `docs/demo.gif` _(placeholder: record the Gradio demo with a patch pasted on)_.
 - **Write-up:** [docs/technical-writeup.md](docs/technical-writeup.md). **Plain-English notes per step:** [LEARNING.md](LEARNING.md). **Design:** [PLAN.md](PLAN.md).
+
+![Browser demo: a synthetic sea image, then a 4%, 7% and 10% adversarial patch. fp32 and int8 flip from ship to airplane; the defended model stays on ship.](docs/demo.gif)
+
+_Demo recording (`docs/demo.gif`) uses a synthetic image, not a dataset image: with the patch pasted on, fp32 and int8 flip from ship to airplane while the adversarially trained model stays on ship._
 
 Small models, small images, one toolchain: this is a study, not a claim about production edge devices. No dataset images are in the repo.
 
